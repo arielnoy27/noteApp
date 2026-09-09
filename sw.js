@@ -1,7 +1,7 @@
 // Minimal offline app-shell cache. Bump CACHE_NAME any time one of the
 // cached files changes so the next visit picks up the new version instead
 // of serving a stale one forever.
-const CACHE_NAME = "notes-app-v3";
+const CACHE_NAME = "notes-app-v4";
 
 const APP_SHELL = [
   "./",

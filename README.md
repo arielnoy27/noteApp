@@ -28,7 +28,7 @@ Once it's live on an `https://` URL, install it on Android:
 2. Chrome shows an **Install** prompt (or tap the **⋮** menu → **Install app** / **Add to Home screen**).
 3. Confirm — it installs with the red Notes icon, runs in its own window with no address bar, and behaves like any other installed app from then on (including working offline, since the service worker caches everything on first load).
 
-If you ever change the app's files after it's installed, bump `CACHE_NAME` at the top of `sw.js` (e.g. `notes-app-v4`) — that's what tells an already-installed copy to fetch the new version instead of serving the cached one forever.
+If you ever change the app's files after it's installed, bump `CACHE_NAME` at the top of `sw.js` (e.g. `notes-app-v5`) — that's what tells an already-installed copy to fetch the new version instead of serving the cached one forever.
 
 Two things are handled automatically so the installed app looks right on a real phone, whatever its screen shape:
 

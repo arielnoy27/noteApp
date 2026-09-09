@@ -1,20 +1,33 @@
+/* Palette matched to the app's own Notes icon: --accent is sampled
+   straight from the icon's reddish-orange (the most common single pixel
+   in its flat-color fill, #e3362f), and the neutral surfaces are built
+   from white/near-black instead of the old warm-gray/beige set, per the
+   icon's other color, white. Structural bits that still need SOME
+   separation from pure white to stay legible (--sidebar-bg, --border,
+   --tag-bg) are kept in-family as very light tints of the same accent
+   red rather than an unrelated gray, so the whole light theme reads as
+   just the icon's two colors at different strengths. */
 :root {
-  --bg: #f5f4f2;
+  --bg: #ffffff;
   --bg-elevated: #ffffff;
-  --sidebar-bg: #efeeeb;
-  --border: #e2e0db;
-  --text: #262420;
-  --text-muted: #7a766e;
-  --text-faint: #a8a49b;
-  --accent: #c96442;
-  --accent-hover: #b5563a;
-  --accent-soft: rgba(201, 100, 66, 0.12);
+  --sidebar-bg: #fef8f8;
+  --border: rgba(227, 54, 47, 0.14);
+  --text: #1a1a1a;
+  --text-muted: #6e6e6e;
+  --text-faint: #9a9a9a;
+  --accent: #e3362f;
+  --accent-hover: #c32e28;
+  --accent-soft: rgba(227, 54, 47, 0.12);
   --danger: #c0392b;
   --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
   --radius: 10px;
-  --tag-bg: #e8e5df;
+  --tag-bg: rgba(227, 54, 47, 0.07);
 }
 
+/* Dark mode keeps its own dark surfaces (inverting those to white would
+   just be light mode again) — only the accent is refreshed here, to the
+   same icon red-orange lightened enough to stay readable on a dark
+   background, so the brand color matches across both themes. */
 :root[data-theme="dark"] {
   --bg: #1e1c1a;
   --bg-elevated: #262421;
@@ -23,9 +36,9 @@
   --text: #ece9e4;
   --text-muted: #a19c92;
   --text-faint: #726d64;
-  --accent: #e0794f;
-  --accent-hover: #ea8a63;
-  --accent-soft: rgba(224, 121, 79, 0.15);
+  --accent: #e85a54;
+  --accent-hover: #eb716c;
+  --accent-soft: rgba(232, 90, 84, 0.15);
   --danger: #e2685a;
   --shadow: 0 1px 2px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.25);
   --tag-bg: #322f2a;
@@ -337,7 +350,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 6px 14px;
+  padding: 4px 14px;
   border-radius: 8px;
   border: none;
   background: var(--accent);
