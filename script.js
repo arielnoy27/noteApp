@@ -1094,6 +1094,19 @@
     initTheme();
     ensureExampleLists();
     ensureForceBaselines();
+    // Every cold start of the app lands on the intro screen, which is
+    // supposed to mean "nothing forced yet" — the same guarantee the logo
+    // gives you mid-session. But force lists persist in localStorage as
+    // whatever they were last showing, so if the app got closed (tab
+    // closed, PWA killed, plain refresh) right after a force and before
+    // ever tapping the logo, a fresh load would otherwise start from that
+    // leftover mid-swap state instead of the real saved order. The next
+    // force would then swap against already-swapped lines instead of the
+    // originals, so the intended item wouldn't land where it should.
+    // Restoring baseline here, unconditionally, on every fresh load keeps
+    // "intro screen showing" and "force lists at their saved order" always
+    // true together, exactly like pressing the logo does.
+    restoreForceListsToBaseline();
 
     el.newNoteBtn.addEventListener("click", createNote);
     el.emptyNewNoteBtn.addEventListener("click", createNote);

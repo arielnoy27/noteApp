@@ -28,7 +28,7 @@ Once it's live on an `https://` URL, install it on Android:
 2. Chrome shows an **Install** prompt (or tap the **⋮** menu → **Install app** / **Add to Home screen**).
 3. Confirm — it installs with the red Notes icon, runs in its own window with no address bar, and behaves like any other installed app from then on (including working offline, since the service worker caches everything on first load).
 
-If you ever change the app's files after it's installed, bump `CACHE_NAME` at the top of `sw.js` (e.g. `notes-app-v3`) — that's what tells an already-installed copy to fetch the new version instead of serving the cached one forever.
+If you ever change the app's files after it's installed, bump `CACHE_NAME` at the top of `sw.js` (e.g. `notes-app-v4`) — that's what tells an already-installed copy to fetch the new version instead of serving the cached one forever.
 
 Two things are handled automatically so the installed app looks right on a real phone, whatever its screen shape:
 
@@ -74,7 +74,7 @@ If each line starts with a number (`57. Israel`), only the *name* after the numb
 
 Every force list has a **saved order** — whatever you last typed into it yourself and let autosave, or the shipped default if you've never touched it. Forcing a number never changes that saved order; it only changes what's currently *showing*, as a temporary detour on top of it. If you want the saved order itself to change, just edit the list the normal way (retype it, reorder lines, whatever) and let it autosave like any other note — that new text becomes the saved order from then on, force or no force.
 
-Pressing the **logo** on the note page returns to the intro screen, resets the captured number, *and* resets every force list back to its saved order — regardless of how it got to its current state, whether that's one swap, several, or nothing at all. So if you never touched a list's text yourself, the logo undoes the swap; if you *did* edit and save it, the logo brings back your edited version, not the original shipped list.
+Pressing the **logo** on the note page returns to the intro screen, resets the captured number, *and* resets every force list back to its saved order — regardless of how it got to its current state, whether that's one swap, several, or nothing at all. So if you never touched a list's text yourself, the logo undoes the swap; if you *did* edit and save it, the logo brings back your edited version, not the original shipped list. The app does that same saved-order reset automatically every time it's freshly opened, too — not just when the logo is pressed — so a force from a brand-new visit always starts from a clean, correct baseline even if the app was closed or refreshed right after a previous force, without ever going back through the logo first.
 
 Two ready-made examples ship with the app, both tagged `force` and numbered 1–100: **Countries** (Israel at line 100) and **Foods** (Pizza at line 100). Enter 57 and both lists react to the same number, each against its own content.
 
