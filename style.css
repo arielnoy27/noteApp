@@ -1,0 +1,626 @@
+:root {
+  --bg: #f5f4f2;
+  --bg-elevated: #ffffff;
+  --sidebar-bg: #efeeeb;
+  --border: #e2e0db;
+  --text: #262420;
+  --text-muted: #7a766e;
+  --text-faint: #a8a49b;
+  --accent: #c96442;
+  --accent-hover: #b5563a;
+  --accent-soft: rgba(201, 100, 66, 0.12);
+  --danger: #c0392b;
+  --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+  --radius: 10px;
+  --tag-bg: #e8e5df;
+}
+
+:root[data-theme="dark"] {
+  --bg: #1e1c1a;
+  --bg-elevated: #262421;
+  --sidebar-bg: #211f1c;
+  --border: #38352f;
+  --text: #ece9e4;
+  --text-muted: #a19c92;
+  --text-faint: #726d64;
+  --accent: #e0794f;
+  --accent-hover: #ea8a63;
+  --accent-soft: rgba(224, 121, 79, 0.15);
+  --danger: #e2685a;
+  --shadow: 0 1px 2px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.25);
+  --tag-bg: #322f2a;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* Fixed and stacked above .icon-pager (z-index 30) so that when the app
+   opens, it visibly grows to cover the still-static home screen sitting
+   underneath it — see openApp() in script.js — rather than needing the
+   home screen to slide or fade out of the way itself. transform-origin is
+   set inline, per open, to whichever icon was actually tapped. */
+.app {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  transform-origin: 50% 50%;
+  transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 200ms ease;
+}
+.app[hidden] {
+  display: none;
+}
+/* Applied just before the app is unhidden, then removed a frame later so
+   the browser has something to transition FROM — pins the app down to a
+   tiny, invisible point at its transform-origin (the tapped icon), which
+   is what makes it look like the icon itself is expanding into the app. */
+.app.app-launch-start {
+  transform: scale(0.04);
+  opacity: 0;
+}
+
+/* ---------- Intro screen ---------- */
+
+.intro-screen {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+.intro-screen[hidden] {
+  display: none;
+}
+
+.intro-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px;
+  max-width: 320px;
+}
+
+.intro-icon {
+  width: 44px;
+  height: 44px;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+
+.intro-card h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+
+.intro-subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0 0 28px;
+}
+
+.intro-btn {
+  padding: 12px 28px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.intro-btn.primary {
+  background: var(--accent);
+  color: #fff;
+}
+.intro-btn.primary:hover {
+  background: var(--accent-hover);
+}
+
+/* ---------- Icon matrix pager ---------- */
+/* Full-screen phone-screenshot pages used to silently capture a digit by
+   pressing (invisible) zones over specific app icons, and to move between
+   pages with a real, finger-tracking swipe — like flicking between actual
+   home screens. No visible UI is drawn on top of the screenshots.
+
+   Structure: .icon-pager (the fixed full-screen viewport, clips overflow)
+   holds two layers stacked on top of each other. .icon-pager-bg is the
+   wallpaper — it's the SAME image behind every page (confirmed pixel-
+   identical against the source screenshots), so it's drawn once here and
+   never moves. .icon-track sits above it and is three times the viewport
+   width, holding all three slides side by side; each slide's image
+   (icons1.png / icons2.png / icons3.png) is the same screenshot with the
+   wallpaper itself knocked out to transparent, leaving just the icons/
+   widget/search bar/dots — so sliding the track looks exactly like the
+   icons gliding across a stationary background, the way a real home-screen
+   swipe actually looks, instead of the whole photo (wallpaper included)
+   shifting together. Page 3's Notes icon is where the flow actually ends —
+   a plain tap on it (not a swipe) opens the app; see script.js. Dragging
+   past either end of the track instead moves .icon-pager itself
+   — background layer and all — sliding the whole thing off to reveal the
+   intro screen or the notes app underneath (that part SHOULD move as one
+   piece, since you're leaving the phone-screen illusion entirely). See the
+   drag handling in script.js. All three of .icon-pager/.icon-pager-bg
+   (indirectly, as a child)/.icon-track transition smoothly by default; the
+   "dragging" class turns that off so a live drag can follow the pointer
+   1:1 with no lag, and gets removed on release so the final snap/commit
+   animates. */
+
+.icon-pager {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  overflow: hidden;
+  background: #000000;
+  touch-action: none;
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.icon-pager[hidden] {
+  display: none;
+}
+.icon-pager.dragging {
+  transition: none;
+}
+
+/* Fills the entire viewport edge-to-edge (cropping whichever dimension
+   overflows) instead of letterboxing to the source screenshots' native
+   1080:2340 aspect ratio, so there's never a black bar on a phone whose
+   screen is a different shape. Sized and positioned exactly like
+   .icon-matrix-frame below so its pixels line up perfectly with whichever
+   icon layer is currently on top of it — see layoutTapZones() in
+   script.js, which recomputes each tap-zone's on-screen position to match
+   this same crop. */
+.icon-pager-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.icon-track {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 300%;
+  height: 100%;
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.icon-track.dragging {
+  transition: none;
+}
+
+.icon-slide {
+  width: 33.3334%;
+  height: 100%;
+  flex: 0 0 33.3334%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-matrix-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.tap-zone {
+  position: absolute;
+  background: transparent;
+}
+
+/* ---------- Sidebar ---------- */
+
+.sidebar {
+  width: 300px;
+  min-width: 300px;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: margin-left 0.25s ease;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 16px 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.brand:hover {
+  opacity: 0.75;
+}
+
+.brand-icon { width: 20px; height: 20px; border-radius: 5px; object-fit: contain; display: block; }
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.icon-btn:hover { background: var(--tag-bg); color: var(--text); }
+.icon-btn svg { width: 18px; height: 18px; }
+
+.search-wrap {
+  position: relative;
+  margin: 0 16px 12px;
+}
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  color: var(--text-faint);
+  pointer-events: none;
+}
+#searchInput {
+  width: 100%;
+  padding: 8px 10px 8px 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+  font-size: 13.5px;
+  outline: none;
+}
+#searchInput:focus { border-color: var(--accent); }
+
+.tag-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 16px 10px;
+  max-height: 62px;
+  overflow-y: auto;
+}
+.tag-chip {
+  font-size: 11.5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--tag-bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.tag-chip.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.new-note-btn {
+  margin: 0 16px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.new-note-btn svg { width: 15px; height: 15px; }
+.new-note-btn:hover { background: var(--accent-hover); }
+
+.notes-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 10px;
+}
+
+.note-item {
+  padding: 10px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 2px;
+  border: 1px solid transparent;
+  position: relative;
+}
+.note-item:hover { background: var(--tag-bg); }
+.note-item.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.note-item-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+.note-item-title {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+.note-item.active .note-item-title { color: var(--accent); }
+
+.pin-dot { width: 12px; height: 12px; color: var(--accent); flex-shrink: 0; }
+
+.note-item-snippet {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-item-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.note-item-date { font-size: 11px; color: var(--text-faint); }
+
+.note-item-tags {
+  display: flex;
+  gap: 4px;
+  overflow: hidden;
+}
+.mini-tag {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--tag-bg);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.no-results {
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 13px;
+  padding: 40px 20px;
+}
+
+.sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+}
+.ghost-btn {
+  font-size: 11.5px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+.ghost-btn:hover { background: var(--tag-bg); color: var(--text); }
+.note-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+
+/* ---------- Editor ---------- */
+
+.editor {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--bg-elevated);
+  display: flex;
+  flex-direction: column;
+}
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text-muted);
+  padding: 20px;
+}
+.empty-state svg { width: 48px; height: 48px; color: var(--text-faint); margin-bottom: 14px; }
+.empty-state h2 { font-size: 17px; margin: 0 0 6px; color: var(--text); }
+.empty-state p { font-size: 13.5px; margin: 0 0 18px; max-width: 280px; }
+
+.editor-content {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  max-width: 780px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 0;
+  position: sticky;
+  top: 0;
+  background: var(--bg-elevated);
+  z-index: 5;
+}
+.tool-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12.5px;
+}
+.tool-btn:hover { background: var(--tag-bg); color: var(--text); }
+.tool-btn.active { background: var(--accent-soft); color: var(--accent); }
+.tool-btn svg { width: 16px; height: 16px; }
+.tool-btn.danger:hover { background: rgba(192,57,43,0.12); color: var(--danger); }
+.tool-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 4px;
+}
+.toolbar-spacer { flex: 1; }
+.save-status {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  margin-right: 6px;
+}
+
+.note-title-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 26px;
+  font-weight: 700;
+  padding: 4px 0 8px;
+  font-family: inherit;
+}
+.note-title-input::placeholder { color: var(--text-faint); }
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.note-tags-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-family: inherit;
+}
+.note-tags-input::placeholder { color: var(--text-faint); }
+.note-date { font-size: 12px; color: var(--text-faint); white-space: nowrap; }
+
+.note-body {
+  flex: 1;
+  outline: none;
+  padding: 20px 0 60px;
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--text);
+  overflow-y: auto;
+}
+.note-body:empty::before {
+  content: attr(data-placeholder);
+  color: var(--text-faint);
+}
+.note-body ul, .note-body ol { padding-left: 22px; }
+.note-body li { margin: 4px 0; }
+
+/* ---------- Mobile ---------- */
+
+.mobile-toggle {
+  display: none;
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 20;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+}
+.mobile-toggle svg { width: 18px; height: 18px; }
+
+@media (max-width: 760px) {
+  .mobile-toggle { display: flex; }
+
+  .sidebar {
+    position: fixed;
+    z-index: 15;
+    left: 0;
+    top: 0;
+    margin-left: -300px;
+    box-shadow: var(--shadow);
+  }
+  .sidebar.open { margin-left: 0; }
+
+  .editor-content { padding: 0 20px; }
+  .editor-toolbar { padding-top: 56px; }
+}
+
+/* scrollbars */
+.notes-list::-webkit-scrollbar,
+.editor::-webkit-scrollbar,
+.note-body::-webkit-scrollbar,
+.tag-filter::-webkit-scrollbar {
+  width: 8px;
+}
+.notes-list::-webkit-scrollbar-thumb,
+.editor::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 8px;
+}

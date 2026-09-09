@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Notes</title>
+
+<!-- PWA: manifest + icons + the meta tags Android/Chrome (and, as a
+     bonus, iOS/Safari) actually look at to install this as a standalone
+     app instead of just a bookmarked site. -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="icons/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Notes">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="intro-screen" id="introScreen">
+  <div class="intro-card">
+    <svg class="intro-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 4C4 2.89543 4.89543 2 6 2H14L20 8V20C20 21.1046 19.1046 22 18 22H6C4.89543 22 4 21.1046 4 20V4Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M14 2V8H20" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+    </svg>
+    <h1>Notes</h1>
+    <p class="intro-subtitle">Choose how you want to start.</p>
+    <button class="intro-btn primary" id="forceNumberBtn">Force a Number</button>
+  </div>
+</div>
+
+<div class="icon-pager" id="iconPager" hidden>
+  <div class="icon-pager-bg" style="background-image:url('images/wallpaper.png')"></div>
+  <div class="icon-track" id="iconTrack">
+    <div class="icon-slide">
+      <div class="icon-matrix-frame" id="iconFrame1" style="background-image:url('images/icons1.png')">
+        <div class="tap-zone" data-digit="0" data-fx-left="4.28" data-fx-top="41.79" data-fx-width="22" data-fx-height="10" style="left:4.28%;top:41.79%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="1" data-fx-left="27.43" data-fx-top="41.79" data-fx-width="22" data-fx-height="10" style="left:27.43%;top:41.79%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="2" data-fx-left="50.57" data-fx-top="41.79" data-fx-width="22" data-fx-height="10" style="left:50.57%;top:41.79%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="3" data-fx-left="73.72" data-fx-top="41.79" data-fx-width="22" data-fx-height="10" style="left:73.72%;top:41.79%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="4" data-fx-left="27.43" data-fx-top="53.97" data-fx-width="22" data-fx-height="10" style="left:27.43%;top:53.97%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="5" data-fx-left="50.57" data-fx-top="53.97" data-fx-width="22" data-fx-height="10" style="left:50.57%;top:53.97%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="6" data-fx-left="73.72" data-fx-top="53.97" data-fx-width="22" data-fx-height="10" style="left:73.72%;top:53.97%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="7" data-fx-left="27.43" data-fx-top="66.15" data-fx-width="22" data-fx-height="10" style="left:27.43%;top:66.15%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="8" data-fx-left="50.57" data-fx-top="66.15" data-fx-width="22" data-fx-height="10" style="left:50.57%;top:66.15%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="9" data-fx-left="73.72" data-fx-top="66.15" data-fx-width="22" data-fx-height="10" style="left:73.72%;top:66.15%;width:22%;height:10%"></div>
+      </div>
+    </div>
+    <div class="icon-slide">
+      <div class="icon-matrix-frame" id="iconFrame2" style="background-image:url('images/icons2.png')">
+        <div class="tap-zone" data-digit="0" data-fx-left="4.28" data-fx-top="41.79" data-fx-width="22" data-fx-height="10" style="left:4.28%;top:41.79%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="1" data-fx-left="27.43" data-fx-top="41.79" data-fx-width="22" data-fx-height="10" style="left:27.43%;top:41.79%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="2" data-fx-left="50.57" data-fx-top="41.79" data-fx-width="22" data-fx-height="10" style="left:50.57%;top:41.79%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="3" data-fx-left="73.72" data-fx-top="41.79" data-fx-width="22" data-fx-height="10" style="left:73.72%;top:41.79%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="4" data-fx-left="27.43" data-fx-top="53.97" data-fx-width="22" data-fx-height="10" style="left:27.43%;top:53.97%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="5" data-fx-left="50.57" data-fx-top="53.97" data-fx-width="22" data-fx-height="10" style="left:50.57%;top:53.97%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="6" data-fx-left="73.72" data-fx-top="53.97" data-fx-width="22" data-fx-height="10" style="left:73.72%;top:53.97%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="7" data-fx-left="27.43" data-fx-top="66.15" data-fx-width="22" data-fx-height="10" style="left:27.43%;top:66.15%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="8" data-fx-left="50.57" data-fx-top="66.15" data-fx-width="22" data-fx-height="10" style="left:50.57%;top:66.15%;width:22%;height:10%"></div>
+        <div class="tap-zone" data-digit="9" data-fx-left="73.72" data-fx-top="66.15" data-fx-width="22" data-fx-height="10" style="left:73.72%;top:66.15%;width:22%;height:10%"></div>
+      </div>
+    </div>
+    <div class="icon-slide">
+      <div class="icon-matrix-frame" id="iconFrame3" style="background-image:url('images/icons3.png')">
+        <div class="tap-zone" data-action="open-app" data-fx-left="5.83" data-fx-top="30.21" data-fx-width="18.90" data-fx-height="10.61" style="left:5.83%;top:30.21%;width:18.90%;height:10.61%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app" id="app" hidden>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand" id="appLogo" title="Back to start">
+        <img class="brand-icon" src="images/app-logo.png" alt="">
+        <span>Notes</span>
+      </div>
+      <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.4 5.4 0 0 1-7.54-7.54A9.05 9.05 0 0 0 12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search notes..." autocomplete="off">
+    </div>
+
+    <div class="tag-filter" id="tagFilter"></div>
+
+    <button class="new-note-btn" id="newNoteBtn">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      New note
+    </button>
+
+    <div class="notes-list" id="notesList"></div>
+
+    <div class="sidebar-footer">
+      <button class="ghost-btn" id="exportBtn" title="Export all notes as JSON">Export</button>
+      <label class="ghost-btn" id="importBtn" title="Import notes from JSON">
+        Import
+        <input type="file" id="importFile" accept="application/json" hidden>
+      </label>
+      <span class="note-count" id="noteCount">0 notes</span>
+    </div>
+  </aside>
+
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle sidebar">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <!-- Main editor -->
+  <main class="editor" id="editor">
+
+    <div class="empty-state" id="emptyState">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 4C4 2.89543 4.89543 2 6 2H14L20 8V20C20 21.1046 19.1046 22 18 22H6C4.89543 22 4 21.1046 4 20V4Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M14 2V8H20" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+      </svg>
+      <h2>No note selected</h2>
+      <p>Pick a note from the list, or create a new one to get started.</p>
+      <button class="new-note-btn" id="emptyNewNoteBtn">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        New note
+      </button>
+    </div>
+
+    <div class="editor-content" id="editorContent">
+      <div class="editor-toolbar">
+        <button class="tool-btn" data-cmd="bold" title="Bold"><b>B</b></button>
+        <button class="tool-btn" data-cmd="italic" title="Italic"><i>I</i></button>
+        <button class="tool-btn" data-cmd="underline" title="Underline"><u>U</u></button>
+        <span class="tool-sep"></span>
+        <button class="tool-btn" data-cmd="insertUnorderedList" title="Bullet list">&#8226; List</button>
+        <button class="tool-btn" data-cmd="insertOrderedList" title="Numbered list">1. List</button>
+        <span class="tool-sep"></span>
+        <button class="tool-btn" id="pinBtn" title="Pin note">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 17V22M8 3L16 3L15 10L18 13H6L9 10L8 3Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="toolbar-spacer"></div>
+        <span class="save-status" id="saveStatus">Saved</span>
+        <button class="tool-btn danger" id="deleteBtn" title="Delete note">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 7H20M9 7V4H15V7M6 7L7 20H17L18 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <input type="text" id="noteTitle" class="note-title-input" placeholder="Note title">
+
+      <div class="meta-row">
+        <input type="text" id="noteTags" class="note-tags-input" placeholder="Add tags, comma separated...">
+        <span class="note-date" id="noteDate"></span>
+      </div>
+
+      <div id="noteBody" class="note-body" contenteditable="true" data-placeholder="Start writing..."></div>
+    </div>
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
